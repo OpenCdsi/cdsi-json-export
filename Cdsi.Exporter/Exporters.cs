@@ -16,12 +16,11 @@ namespace Cdsi.Exporter
         {
             var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Description = x.GeneralDescription });
 
-            Serializer.WriteAsJson(idx, "api\\testcases.json");
+            Serializer.WriteJsonIndex("api\\testcases", idx);
 
             foreach (var tc in data.Values)
             {
-                Directory.CreateDirectory($"api\\testcases\\{tc.CdcTestId}");
-                Serializer.WriteAsJson(tc, $"api\\testcases\\{tc.CdcTestId}.json");
+                Serializer.WriteJsonIndex($"api\\testcases\\{tc.CdcTestId}", tc);
 
                 var medicalData = new
                 {
@@ -39,71 +38,61 @@ namespace Cdsi.Exporter
                         Conditon = ""
                     })
                 };
-                Serializer.WriteAsJson(medicalData, $"api\\testcases\\{tc.CdcTestId}\\medical.json");
+                Serializer.WriteJsonIndex($"api\\testcases\\{tc.CdcTestId}\\medical", medicalData);
             }
         }
 
         internal static void Export(this IDictionary<string, antigenSupportingData> data)
         {
-            Directory.CreateDirectory("api\\antigens");
-
-            Serializer.WriteAsJson(data.Keys.Select(x => x.ToId()), "api\\antigens.json");
+            var idx = data.Keys.Select(x => x.ToId());
+            Serializer.WriteJsonIndex("api\\antigens", idx);
 
             foreach (var kvp in data)
             {
-                Serializer.WriteAsJson(kvp.Value, $"api\\antigens\\{kvp.Key.ToId()}.json");
-                Directory.CreateDirectory($"api\\antigens\\{kvp.Key.ToId()}");
-                Serializer.WriteAsJson(kvp.Value.series, $"api\\antigens\\{kvp.Key.ToId()}\\series.json");
-                Serializer.WriteAsJson(kvp.Value.contraindications, $"api\\antigens\\{kvp.Key.ToId()}\\contraindications.json");
+                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}", kvp.Value);
+                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\series", kvp.Value.series);
+                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\contraindications", kvp.Value.contraindications);
             }
         }
 
         internal static void Export(this ICollection<scheduleSupportingDataObservation> data)
         {
-            Directory.CreateDirectory("api\\observations");
-
             var idx = data.Select(x => new { x.observationCode, x.observationTitle });
-            Serializer.WriteAsJson(idx, "api\\observations.json");
+            Serializer.WriteJsonIndex("api\\observations", idx);
 
             foreach (var obs in data)
             {
-                Serializer.WriteAsJson(obs, $"api\\observations\\{obs.observationCode}.json");
+                Serializer.WriteJsonIndex($"api\\observations\\{obs.observationCode}", obs);
             }
         }
 
         internal static void Export(this scheduleSupportingData data)
         {
-            Directory.CreateDirectory($"api\\vaccines\\groups");
-
             var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Description = x.shortDescription });
-            Serializer.WriteAsJson(idx, "api\\vaccines.json");
+            Serializer.WriteJsonIndex("api\\vaccines", idx);
 
             foreach (var id in idx)
             {
                 var vaccine = data.cvxToAntigenMap.Where(x => x.cvx == id.Id).First();
-                Serializer.WriteAsJson(vaccine, $"api\\vaccines\\{id.Id}.json");
-
-                Directory.CreateDirectory($"api\\vaccines\\{id.Id}");
+                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}", vaccine);
 
                 var conflicts = data.liveVirusConflicts.Where(x => x.current.cvx == id.Id);
-                Serializer.WriteAsJson(conflicts, $"api\\vaccines\\{id.Id}\\conflicts.json");
+                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\conflicts", conflicts);
 
                 var antigens = vaccine.association.Select(x => x.antigen.ToId());
-                Serializer.WriteAsJson(antigens, $"api\\vaccines\\{id.Id}\\antigens.json");
+                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\antigens", antigens);
             }
 
             var groups = data.vaccineGroups.Select(x => x.name);
-            Serializer.WriteAsJson(groups.Select(x => x.ToId()), $"api\\vaccines\\groups.json");
+            Serializer.WriteJsonIndex($"api\\vaccines\\groups", groups.Select(x => x.ToId()));
 
             foreach (var groupName in groups)
             {
                 var group = data.vaccineGroups.Where(x => x.name == groupName).First();
-                Serializer.WriteAsJson(groups, $"api\\vaccines\\groups\\{groupName.ToId()}.json");
-
-                Directory.CreateDirectory($"api\\vaccines\\groups\\{groupName.ToId()}");
+                Serializer.WriteJsonIndex($"api\\vaccines\\groups\\{groupName.ToId()}", group);
 
                 var groupAntigens = data.vaccineGroupToAntigenMap.Where(x => x.name == groupName);
-                Serializer.WriteAsJson(groupAntigens.Select(x => x.name.ToId()), $"api\\vaccines\\groups\\{groupName.ToId()}\\antigens.json");
+                Serializer.WriteJsonIndex($"api\\vaccines\\groups\\{groupName.ToId()}\\antigens", groupAntigens.Select(x => x.name.ToId()));
             }
         }
 

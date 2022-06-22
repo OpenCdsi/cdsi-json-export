@@ -10,8 +10,6 @@ namespace Cdsi.Exporter
     {
         static void Main(string[] args)
         {
-            Directory.CreateDirectory("api");
-
             Library.Testcases.Export();
             Data.Antigen.Export();
             Data.Schedule.observations.Export();
