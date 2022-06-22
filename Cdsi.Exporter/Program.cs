@@ -10,10 +10,15 @@ namespace Cdsi.Exporter
     {
         static void Main(string[] args)
         {
-            Library.Testcases.Export();
-            Data.Antigen.Export();
-            Data.Schedule.observations.Export();
-            Data.Schedule.Export();
+            Directory.CreateDirectory("_data/api-ids");
+
+            Serializer.WriteJson("_data/api-ids/testcase.json", Library.Testcases.Export());
+            Serializer.WriteJson("_data/api-ids/antigen.json", Data.Antigen.Export());
+            Serializer.WriteJson("_data/api-ids/observation.json", Data.Schedule.observations.Export());
+
+            var scheduleIds = Data.Schedule.Export();
+            Serializer.WriteJson("_data/api-ids/vaccine.json", scheduleIds.Item1);
+            Serializer.WriteJson("_data/api-ids/group.json", scheduleIds.Item2);
         }
     }
 }

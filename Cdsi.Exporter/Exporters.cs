@@ -12,7 +12,7 @@ namespace Cdsi.Exporter
 {
     internal static class Exporters
     {
-        internal static void Export(this IDictionary<string, testcase> data)
+        internal static object Export(this IDictionary<string, testcase> data)
         {
             var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Description = x.GeneralDescription });
 
@@ -40,9 +40,10 @@ namespace Cdsi.Exporter
                 };
                 Serializer.WriteJsonIndex($"api\\testcases\\{tc.CdcTestId}\\medical", medicalData);
             }
+            return idx;
         }
 
-        internal static void Export(this IDictionary<string, antigenSupportingData> data)
+        internal static object Export(this IDictionary<string, antigenSupportingData> data)
         {
             var idx = data.Keys.Select(x => x.ToId());
             Serializer.WriteJsonIndex("api\\antigens", idx);
@@ -53,9 +54,10 @@ namespace Cdsi.Exporter
                 Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\series", kvp.Value.series);
                 Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\contraindications", kvp.Value.contraindications);
             }
+            return idx;
         }
 
-        internal static void Export(this ICollection<scheduleSupportingDataObservation> data)
+        internal static object Export(this ICollection<scheduleSupportingDataObservation> data)
         {
             var idx = data.Select(x => new { x.observationCode, x.observationTitle });
             Serializer.WriteJsonIndex("api\\observations", idx);
@@ -64,9 +66,10 @@ namespace Cdsi.Exporter
             {
                 Serializer.WriteJsonIndex($"api\\observations\\{obs.observationCode}", obs);
             }
+            return idx;
         }
 
-        internal static void Export(this scheduleSupportingData data)
+        internal static Tuple<object, object> Export(this scheduleSupportingData data)
         {
             var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Description = x.shortDescription });
             Serializer.WriteJsonIndex("api\\vaccines", idx);
@@ -94,6 +97,7 @@ namespace Cdsi.Exporter
                 var groupAntigens = data.vaccineGroupToAntigenMap.Where(x => x.name == groupName);
                 Serializer.WriteJsonIndex($"api\\vaccines\\groups\\{groupName.ToId()}\\antigens", groupAntigens.Select(x => x.name.ToId()));
             }
+            return Tuple.Create((object)idx, (object)groups.Select(x => x.ToId()).ToList());
         }
 
         internal static string ToId(this string name)
