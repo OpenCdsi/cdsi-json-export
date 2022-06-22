@@ -14,7 +14,7 @@ namespace Cdsi.Exporter
     {
         internal static void Export(this IDictionary<string, testcase> data)
         {
-            var idx = data.Values.Select(x => new { Name = x.TestcaseName, Id = x.CdcTestId, Description = x.GeneralDescription });
+            var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Description = x.GeneralDescription });
 
             Serializer.WriteAsJson(idx, "api\\testcases.json");
 
@@ -47,7 +47,7 @@ namespace Cdsi.Exporter
         {
             Directory.CreateDirectory("api\\antigens");
 
-            Serializer.WriteAsJson(data.Keys.Select(x=>x.ToId()), "api\\antigens.json");
+            Serializer.WriteAsJson(data.Keys.Select(x => x.ToId()), "api\\antigens.json");
 
             foreach (var kvp in data)
             {
@@ -88,12 +88,12 @@ namespace Cdsi.Exporter
                 var conflicts = data.liveVirusConflicts.Where(x => x.current.cvx == id.Id);
                 Serializer.WriteAsJson(conflicts, $"api\\vaccines\\{id.Id}\\conflicts.json");
 
-                var antigens = vaccine.association.Select(x => x.antigen);
+                var antigens = vaccine.association.Select(x => x.antigen.ToId());
                 Serializer.WriteAsJson(antigens, $"api\\vaccines\\{id.Id}\\antigens.json");
             }
 
             var groups = data.vaccineGroups.Select(x => x.name);
-            Serializer.WriteAsJson(groups.Select(x=>x.ToId()), $"api\\vaccines\\groups.json");
+            Serializer.WriteAsJson(groups.Select(x => x.ToId()), $"api\\vaccines\\groups.json");
 
             foreach (var groupName in groups)
             {
@@ -103,13 +103,13 @@ namespace Cdsi.Exporter
                 Directory.CreateDirectory($"api\\vaccines\\groups\\{groupName.ToId()}");
 
                 var groupAntigens = data.vaccineGroupToAntigenMap.Where(x => x.name == groupName);
-                Serializer.WriteAsJson(groups, $"api\\vaccines\\groups\\{groupName.ToId()}\\antigens.json");
+                Serializer.WriteAsJson(groupAntigens.Select(x => x.name.ToId()), $"api\\vaccines\\groups\\{groupName.ToId()}\\antigens.json");
             }
         }
 
         internal static string ToId(this string name)
         {
-            return name.ToLower().Replace('/','-').Replace(' ','-');
+            return name.ToLower().Replace('/', '-').Replace(' ', '-');
         }
     }
 }
