@@ -45,7 +45,7 @@ namespace Cdsi.Exporter
 
         internal static object Export(this IDictionary<string, antigenSupportingData> data)
         {
-            var idx = data.Keys.Select(x => x.ToId());
+            var idx = data.Keys.Select(x => new { Id = x.ToId(), Name = x });
             Serializer.WriteJsonIndex("api\\antigens", idx);
 
             foreach (var kvp in data)
@@ -59,7 +59,7 @@ namespace Cdsi.Exporter
 
         internal static object Export(this ICollection<scheduleSupportingDataObservation> data)
         {
-            var idx = data.Select(x => new { x.observationCode, x.observationTitle });
+            var idx = data.Select(x => new { Id = x.observationCode, Name=x.observationTitle });
             Serializer.WriteJsonIndex("api\\observations", idx);
 
             foreach (var obs in data)
@@ -69,9 +69,9 @@ namespace Cdsi.Exporter
             return idx;
         }
 
-        internal static Tuple<object, object> Export(this scheduleSupportingData data)
+        internal static object Export(this scheduleSupportingData data)
         {
-            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Description = x.shortDescription });
+            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription });
             Serializer.WriteJsonIndex("api\\vaccines", idx);
 
             foreach (var id in idx)
@@ -86,18 +86,7 @@ namespace Cdsi.Exporter
                 Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\antigens", antigens);
             }
 
-            var groups = data.vaccineGroups.Select(x => x.name);
-            Serializer.WriteJsonIndex($"api\\vaccines\\groups", groups.Select(x => x.ToId()));
-
-            foreach (var groupName in groups)
-            {
-                var group = data.vaccineGroups.Where(x => x.name == groupName).First();
-                Serializer.WriteJsonIndex($"api\\vaccines\\groups\\{groupName.ToId()}", group);
-
-                var groupAntigens = data.vaccineGroupToAntigenMap.Where(x => x.name == groupName);
-                Serializer.WriteJsonIndex($"api\\vaccines\\groups\\{groupName.ToId()}\\antigens", groupAntigens.Select(x => x.name.ToId()));
-            }
-            return Tuple.Create((object)idx, (object)groups.Select(x => x.ToId()).ToList());
+            return idx;
         }
 
         internal static string ToId(this string name)

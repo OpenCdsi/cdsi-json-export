@@ -15,10 +15,7 @@ namespace Cdsi.Exporter
             Serializer.WriteJson("_data/api-ids/testcase.json", Library.Testcases.Export());
             Serializer.WriteJson("_data/api-ids/antigen.json", Data.Antigen.Export());
             Serializer.WriteJson("_data/api-ids/observation.json", Data.Schedule.observations.Export());
-
-            var scheduleIds = Data.Schedule.Export();
-            Serializer.WriteJson("_data/api-ids/vaccine.json", scheduleIds.Item1);
-            Serializer.WriteJson("_data/api-ids/group.json", scheduleIds.Item2);
+            Serializer.WriteJson("_data/api-ids/vaccine.json", Data.Schedule.Export());
         }
     }
 }
