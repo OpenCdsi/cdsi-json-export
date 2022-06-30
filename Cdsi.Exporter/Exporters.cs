@@ -71,7 +71,7 @@ namespace Cdsi.Exporter
 
         internal static object Export(this scheduleSupportingData data)
         {
-            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription, Text = x.association.SelectMany(y => y.antigen).ToList() });
+            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription, Text = String.Join(",", x.association.Select(y => y.antigen).ToList()) });
             Serializer.WriteJsonIndex("api\\vaccines", idx);
 
             foreach (var id in idx)
