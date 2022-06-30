@@ -14,7 +14,7 @@ namespace Cdsi.Exporter
     {
         internal static object Export(this IDictionary<string, testcase> data)
         {
-            var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Description = x.GeneralDescription });
+            var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Text = x.GeneralDescription, Group = x.VaccineGroup });
 
             Serializer.WriteJsonIndex("api\\testcases", idx);
 
@@ -59,7 +59,7 @@ namespace Cdsi.Exporter
 
         internal static object Export(this ICollection<scheduleSupportingDataObservation> data)
         {
-            var idx = data.Select(x => new { Id = x.observationCode, Name=x.observationTitle });
+            var idx = data.Select(x => new { Id = x.observationCode, Name = x.observationTitle, Text = x.indicationText + " " + x.contraindicationText, Indicated = x.indicationText != "", Contraindicated = x.contraindicationText != "" });
             Serializer.WriteJsonIndex("api\\observations", idx);
 
             foreach (var obs in data)
@@ -71,7 +71,7 @@ namespace Cdsi.Exporter
 
         internal static object Export(this scheduleSupportingData data)
         {
-            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription });
+            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription, Text = x.association.SelectMany(y => y.antigen).ToList() });
             Serializer.WriteJsonIndex("api\\vaccines", idx);
 
             foreach (var id in idx)
