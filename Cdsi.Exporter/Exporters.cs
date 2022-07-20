@@ -1,5 +1,5 @@
-﻿using Cdsi.SupportingData;
-using Cdsi.Testcases;
+﻿using OpenCdsi.SupportingData;
+using OpenCdsi.Testcases;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Cdsi.Exporter
+namespace OpenCdsi.Exporter
 {
     internal static class Exporters
     {
@@ -80,7 +80,10 @@ namespace Cdsi.Exporter
                 Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}", vaccine);
 
                 var conflicts = data.liveVirusConflicts.Where(x => x.current.cvx == id.Id);
-                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\conflicts", conflicts);
+                if (conflicts.Any())
+                {
+                    Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\conflicts", conflicts);
+                }
 
                 var antigens = vaccine.association.Select(x => x.antigen.ToId());
                 Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\antigens", antigens);

@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cdsi.SupportingData" Version="1.0.2" />
-    <PackageReference Include="Cdsi.Testcases" Version="1.0.2" />
+    <PackageReference Include="OpenCdsi.SupportingData" Version="1.1.0" />
+    <PackageReference Include="OpenCdsi.Testcases" Version="1.1.1" />
   </ItemGroup>
 
 </Project>

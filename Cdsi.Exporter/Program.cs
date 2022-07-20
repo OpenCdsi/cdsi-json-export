@@ -1,10 +1,10 @@
 ﻿using System.IO;
 using System.Text.Json;
-using Cdsi.SupportingData;
-using Cdsi.Testcases;
-using Cdsi;
+using OpenCdsi.SupportingData;
+using OpenCdsi.Testcases;
+using OpenCdsi;
 
-namespace Cdsi.Exporter
+namespace OpenCdsi.Exporter
 {
     class Program
     {

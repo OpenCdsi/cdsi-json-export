@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Cdsi.Exporter
+namespace OpenCdsi.Exporter
 {
     internal static class Serializer
     {
