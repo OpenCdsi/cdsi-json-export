@@ -8,14 +8,15 @@ namespace OpenCdsi.Exporter
 {
     class Program
     {
+        public static string BasePath => @"..\..\..\..\Build";
         static void Main(string[] args)
         {
-            Directory.CreateDirectory("_data/api-ids");
+            Directory.CreateDirectory($"{Program.BasePath}/_data");
 
-            Serializer.WriteJson("_data/api-ids/testcase.json", Library.Testcases.Export());
-            Serializer.WriteJson("_data/api-ids/antigen.json", Data.Antigen.Export());
-            Serializer.WriteJson("_data/api-ids/observation.json", Data.Schedule.observations.Export());
-            Serializer.WriteJson("_data/api-ids/vaccine.json", Data.Schedule.Export());
+            Serializer.WriteJson($"{Program.BasePath}/_data/testcase.json", Library.Testcases.Export());
+            Serializer.WriteJson($"{Program.BasePath}/_data/antigen.json", Data.Antigen.Export());
+            Serializer.WriteJson($"{Program.BasePath}/_data/observation.json", Data.Schedule.observations.Export());
+            Serializer.WriteJson($"{Program.BasePath}/_data/vaccine.json", Data.Schedule.Export());
         }
     }
 }

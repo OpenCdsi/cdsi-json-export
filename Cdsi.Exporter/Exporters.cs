@@ -16,11 +16,11 @@ namespace OpenCdsi.Exporter
         {
             var idx = data.Values.Select(x => new { Id = x.CdcTestId, Name = x.TestcaseName, Text = x.GeneralDescription, Group = x.VaccineGroup });
 
-            Serializer.WriteJsonIndex("api\\testcases", idx);
+            Serializer.WriteJsonIndex($"{Program.BasePath}/testcases", idx);
 
             foreach (var tc in data.Values)
             {
-                Serializer.WriteJsonIndex($"api\\testcases\\{tc.CdcTestId}", tc);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/testcases/{tc.CdcTestId}", tc);
 
                 var medicalData = new
                 {
@@ -38,7 +38,7 @@ namespace OpenCdsi.Exporter
                         Conditon = ""
                     })
                 };
-                Serializer.WriteJsonIndex($"api\\testcases\\{tc.CdcTestId}\\medical", medicalData);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/testcases/{tc.CdcTestId}/medical", medicalData);
             }
             return idx;
         }
@@ -46,13 +46,13 @@ namespace OpenCdsi.Exporter
         internal static object Export(this IDictionary<string, antigenSupportingData> data)
         {
             var idx = data.Keys.Select(x => new { Id = x.ToId(), Name = x });
-            Serializer.WriteJsonIndex("api\\antigens", idx);
+            Serializer.WriteJsonIndex($"{Program.BasePath}/antigens", idx);
 
             foreach (var kvp in data)
             {
-                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}", kvp.Value);
-                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\series", kvp.Value.series);
-                Serializer.WriteJsonIndex($"api\\antigens\\{kvp.Key.ToId()}\\contraindications", kvp.Value.contraindications);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/antigens/{kvp.Key.ToId()}", kvp.Value);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/antigens/{kvp.Key.ToId()}/series", kvp.Value.series);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/antigens/{kvp.Key.ToId()}/contraindications", kvp.Value.contraindications);
             }
             return idx;
         }
@@ -60,33 +60,33 @@ namespace OpenCdsi.Exporter
         internal static object Export(this ICollection<scheduleSupportingDataObservation> data)
         {
             var idx = data.Select(x => new { Id = x.observationCode, Name = x.observationTitle, Text = x.indicationText + " " + x.contraindicationText, Indicated = x.indicationText != "", Contraindicated = x.contraindicationText != "" });
-            Serializer.WriteJsonIndex("api\\observations", idx);
+            Serializer.WriteJsonIndex($"{Program.BasePath}/observations", idx);
 
             foreach (var obs in data)
             {
-                Serializer.WriteJsonIndex($"api\\observations\\{obs.observationCode}", obs);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/observations/{obs.observationCode}", obs);
             }
             return idx;
         }
 
         internal static object Export(this scheduleSupportingData data)
         {
-            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription, Text = String.Join(",", x.association.Select(y => y.antigen).ToList()) });
-            Serializer.WriteJsonIndex("api\\vaccines", idx);
+            var idx = data.cvxToAntigenMap.Select(x => new { Id = x.cvx, Name = x.shortDescription, Text = String.Join(",", x.association.Select(y => y.antigen).ToList()), Conflicts = data.liveVirusConflicts.Any(y => y.current.cvx == x.cvx) });
+            Serializer.WriteJsonIndex($"{Program.BasePath}/vaccines", idx);
 
             foreach (var id in idx)
             {
                 var vaccine = data.cvxToAntigenMap.Where(x => x.cvx == id.Id).First();
-                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}", vaccine);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/vaccines/{id.Id}", vaccine);
 
                 var conflicts = data.liveVirusConflicts.Where(x => x.current.cvx == id.Id);
                 if (conflicts.Any())
                 {
-                    Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\conflicts", conflicts);
+                    Serializer.WriteJsonIndex($"{Program.BasePath}/vaccines/{id.Id}/conflicts", conflicts);
                 }
 
                 var antigens = vaccine.association.Select(x => x.antigen.ToId());
-                Serializer.WriteJsonIndex($"api\\vaccines\\{id.Id}\\antigens", antigens);
+                Serializer.WriteJsonIndex($"{Program.BasePath}/vaccines/{id.Id}/antigens", antigens);
             }
 
             return idx;
