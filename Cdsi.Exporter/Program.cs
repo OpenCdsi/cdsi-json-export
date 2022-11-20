@@ -1,32 +1,32 @@
 ﻿using System.IO;
 using System.Text.Json;
-using Cdsi.SupportingData;
-using Cdsi.Testcases;
-using Cdsi;
 
-namespace Cdsi.Exporter
+namespace OpenCdsi.Export
 {
     class Program
     {
-        const string TESTCASES_FILENAME = "testcases.json";
-        const string ANTIGENS_FILENAME = "antigens.json";
-        const string SCHEDULE_FILENAME = "schedule.json";
+        private static JsonSerializerOptions _options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            // etc.
+        };
+
         static void Main(string[] args)
         {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                // etc.
-            };
+            Export("caselibrary", CaseLibrary.Cases);
+            Export("antigens", Cdsi.Antigens);
 
-            var data = JsonSerializer.Serialize(Library.Testcases, options);
-            File.WriteAllText(TESTCASES_FILENAME, data);
 
-            data = JsonSerializer.Serialize(Data.Antigen, options);
-            File.WriteAllText(ANTIGENS_FILENAME, data);
+            Export("vaccines", Cdsi.Schedule.Vaccines);
+            Export("groups", Cdsi.Schedule.VaccineGroups);
+            Export("observations", Cdsi.Schedule.Observations);
+            Export("conflicts", Cdsi.Schedule.LiveVirusConflicts);
+        }
 
-            data = JsonSerializer.Serialize(Data.Schedule, options);
-            File.WriteAllText(SCHEDULE_FILENAME, data);
+        static void Export(string basename, object obj)
+        {
+            var data = JsonSerializer.Serialize(obj, _options);
+            File.WriteAllText(basename + ".json", data);
         }
     }
 }

@@ -3,12 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <RootNamespace>Cdsi.Export</RootNamespace>
+    <RootNamespace>OpenCdsi.Export</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cdsi.SupportingData" Version="1.0.2" />
-    <PackageReference Include="Cdsi.Testcases" Version="1.0.2" />
+    <PackageReference Include="OpenCdsi.Cases" Version="2.428.0" />
+    <PackageReference Include="OpenCdsi.Schedule" Version="2.438.2" />
   </ItemGroup>
 
 </Project>
