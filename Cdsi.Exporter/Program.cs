@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Text.Json;
 
 namespace OpenCdsi.Export
@@ -13,10 +14,8 @@ namespace OpenCdsi.Export
 
         static void Main(string[] args)
         {
-            Export("caselibrary", CaseLibrary.Cases);
-            Export("antigens", Cdsi.Antigens);
-
-
+            Export("caselibrary", CaseLibrary.Cases.Values);
+            Export("antigens", Cdsi.Antigens.Values.Select(Antigen.CreateFrom));
             Export("vaccines", Cdsi.Schedule.Vaccines);
             Export("groups", Cdsi.Schedule.VaccineGroups);
             Export("observations", Cdsi.Schedule.Observations);
@@ -26,7 +25,7 @@ namespace OpenCdsi.Export
         static void Export(string basename, object obj)
         {
             var data = JsonSerializer.Serialize(obj, _options);
-            File.WriteAllText(basename + ".json", data);
+            File.WriteAllText(@"..\..\..\..\results\" + basename + ".json", data);
         }
     }
 }
