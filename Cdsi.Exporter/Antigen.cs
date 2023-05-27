@@ -9,6 +9,7 @@ namespace OpenCdsi.Export
 {
     internal class Antigen : antigenSupportingData
     {
+        public object Key { get; set; }
         public string Name { get; set; }
 
         public static Antigen CreateFrom(antigenSupportingData data)
@@ -18,7 +19,8 @@ namespace OpenCdsi.Export
                 contraindications = data.contraindications,
                 immunity = data.immunity,
                 series = data.series,
-                Name = data.series[0].targetDisease
+                Name = data.series[0].targetDisease,
+                Key = Keymaker.Create(data.series[0].targetDisease)
             };
         }
     }

@@ -11,7 +11,8 @@ namespace OpenCdsi.Export
 
         private static JsonSerializerOptions _options = new JsonSerializerOptions
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true,
             // etc.
         };
 
@@ -24,12 +25,12 @@ namespace OpenCdsi.Export
         {
             Setup();
 
-            Export("caselibrary", CaseLibrary.Cases.Values);
+            Export("case", CaseLibrary.Cases.Values.Select(Testcase.CreateFrom));
             Export("antigens", Cdsi.Antigens.Values.Select(Antigen.CreateFrom));
-            Export("vaccines", Cdsi.Schedule.Vaccines);
-            Export("groups", Cdsi.Schedule.VaccineGroups);
-            Export("observations", Cdsi.Schedule.Observations);
-            Export("conflicts", Cdsi.Schedule.LiveVirusConflicts);
+            Export("vaccines", Cdsi.Schedule.Vaccines.Select(Vaccine.CreateFrom));
+            Export("vaccine-groups", Cdsi.Schedule.VaccineGroups.Select(VaccineGroup.CreateFrom));
+            Export("observations", Cdsi.Schedule.Observations.Select(Observation.CreateFrom));
+            Export("live-virus-conflicts", Cdsi.Schedule.LiveVirusConflicts.Select(LiveVirusConflict.CreateFrom));
         }
 
         static void Export(string basename, object obj)
